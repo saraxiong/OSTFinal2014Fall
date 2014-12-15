@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <body>
+    <h2>Edit Answer</h2>
+    <a href="/uploadimage">
+    <p>To Upload Image Page to Find Image Link</p>
+    </a>
+    <form action="/editanswer/{{questionkey}}/{{answerkey}}" enctype="multipart/form-data" method="post">
+      <h3>answer</h3>
+      <p><textarea name="content" rows="20" cols="100">{{oldcontent}}</textarea></p>
+      <input type="submit" value="Update" style="font-size:20px">
+    </form>
+
+  </body>
+</html>
+{% endautoescape %}
+

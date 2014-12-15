@@ -1,0 +1,17 @@
+body {
+    background-color: #DDDDDD;
+    text-align:left;
+    padding:5px;
+}
+
+.wrapper {
+	max-width: 960px;
+	margin: 0 auto;
+	clear: both;
+	text-align:center;
+}
+
+.direction {
+    text-align:left;
+    padding:5px;
+}

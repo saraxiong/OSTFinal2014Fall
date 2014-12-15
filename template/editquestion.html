@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <body>
+    <h2>Edit Question</h2>
+    <a href="/uploadimage">
+    <p>To Upload Image Page to Find Image Link</p>
+    </a>
+    <form action="/editquestion/{{questionkey}}" enctype="multipart/form-data" method="post">
+      <p>Name</p>
+      <p><input type="text" name="name" value="{{oldname}}"></p>
+      <h3>Tags</h3>
+      <p><input type="text" name="tags" value="{{oldtags}}"></p>      
+      <h3>Content</h3>
+      <p><textarea name="content" rows="20" cols="100">{{oldcontent}}</textarea></p>
+      <h3>Image</h3>
+      {% for image in images %}
+      <h3><img src="/image/{{image.key()}}"/>
+	<br>
+	<input type="text" value="[img:{{image.key()}}]" style="width:300px;font-size:x-small"/>
+      </h3>
+      {% endfor %}
+      <h3>
+	<input type="file" name="file">
+      </h3>
+      <input type="submit" value="Update" style="font-size:20px">
+    </form>
+
+  </body>
+</html>
+{% endautoescape %}
+

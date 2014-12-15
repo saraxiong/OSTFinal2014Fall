@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <body>
+    <h1>Add Answer</h1>
+    <a href="/uploadimage">
+    <p>To Upload Image Page to Find Image Link</p>
+    </a>    
+    <form action="/addanswer/{{questionkey}}" method="post">
+      <h3>answer:<h3>
+      <div><textarea name="content" rows="5" cols="60"></textarea></div>
+      <div><input type="submit" value="answer"></div>
+    </form>
+  </body>
+</html>
+{% endautoescape %}
+

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <body>
+    <h2>Upload Image</h2>
+    <a href="/">
+    <p>Back to Main_Page</p>
+    </a>
+    <form action="/uploadimage" enctype="multipart/form-data" method="post">
+      <h3>Image</h3>
+      {% for image in images %}
+      <h3><img src="/image/{{image.key()}}"/>
+        <br>
+        <input type="text" value="[img:{{image.key()}}]" style="width:300px;font-size:x-small"/>
+      </h3>
+      {% endfor %}
+      <h3>
+        <input type="file" name="file">
+      </h3>
+      <input type="submit" value="Update" style="font-size:20px">
+    </form>
+
+  </body>
+</html>
+{% endautoescape %}
+

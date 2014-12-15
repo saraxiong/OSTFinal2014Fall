@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <head>
+    
+    <title>View</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/> 
+
+  </head>
+  <body>
+    <div class="wrapper">
+    <div class="intro">
+      <h3 id="page-title">
+	<p>Question View Page</p>
+      </h3>
+    </div>
+    <div class="menu">
+    
+    <p>
+     <a href = "/addanswer/{{questionkey}}">Add Answer</a>
+    </p>
+    <a href="/">
+    <p>Back to Main_Page</p>
+    </a>
+    </div>
+    <hr>
+    <h3>Title: {{parentquestion.name}}</h3>
+    <div>Question content: {{parentquestion.contentFormat()|safe}}</div>
+    <a href = "/editquestion/{{questionkey}}">
+       <p>Edit this question/Add images</p>
+    </a>
+    <a href="/vote/question/up/{{questionkey}}/additional">
+        <input type='button' value="Up">
+    </a>{{parentquestion.up}}
+    
+    <a href="/vote/question/down/{{questionkey}}/additional">
+        <input type='button' value="Down">
+    </a>{{parentquestion.down}}    
+    <div>diff: {{parentquestion.diff}}</div>
+    <div>created on: {{parentquestion.created_time.strftime("%d %b %Y %H:%M:%S EST")}}</div>
+        <div>editted on: {{parentquestion.modifytimeEST().strftime("%d %b %Y %H:%M:%S EST")}}</div>
+      
+    <hr>
+    {% for answer in answers %}
+    <div class="block">
+        <div>{{answer.ownername}} wrote:</div>        
+	<div class="body"> 
+	  {{answer.contentFormat()|safe}}
+	</div>
+        <a href = "/editanswer/{{questionkey}}/{{answer.key().id()}}">
+            <p>Edit this answer</p>
+        </a>        
+        <a href="/vote/answer/up/{{questionkey}}/{{answer.key().id()}}">
+           <input type='button' value="Up">
+        </a>{{answer.up}}
+
+        <a href="/vote/answer/down/{{questionkey}}/{{answer.key().id()}}">
+           <input type='button' value="Down">
+        </a>{{answer.down}}
+        <div>diff: {{answer.diff}}</div>
+        <div>created on: {{answer.created_time.strftime("%d %b %Y %H:%M:%S EST")}}</div>
+        <div>editted on: {{answer.modifytimeEST().strftime("%d %b %Y %H:%M:%S EST")}}</div>
+        <hr>        
+   </div>
+   {% endfor %}
+   
+   
+  </body>
+</html>
+{% endautoescape %}
+

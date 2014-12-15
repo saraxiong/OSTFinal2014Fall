@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <head>
+    <link rel="alternate" type="application/rss+xml" href="/rss/{{blogkey}}" title="RSS">
+    <title>Main Page</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/> 
+
+  </head>
+   <body>
+    <div class="wrapper">
+    <div class="intro">
+      <h3 id="page-title">
+	<p>All Question List</p>
+      </h3>
+    </div>
+    <div class="menu">
+    <a href="/rss/{{blogkey}}">
+      RSS
+    </a>
+    <p>
+     <a href = "{{ url|safe }}">{{ url_linktext }}</a>
+    </p>
+    <a href="/addquestion">
+    <p>CreateQuestion</p>
+    </a>
+    </div>
+   
+    <div>All Tags:
+      {% for tag in taglist %}
+        <a href="/tag/{{tag.key()}}"><span class="tag">{{tag.tag}}</span></a>
+      {% endfor %}
+    </div>  
+    </div>
+
+    <hr>
+    {% for question in questions %}  
+    <div class="block">
+      <div class="postHeader">
+         <div>{{question.ownername}} wrote:</div>
+         <h3><a href="/questionview/{{question.key().id()}}">{{question.name}}</a></h3>
+      </div>
+      <div class="body"> 
+         <pre>{{question.content|truncate(500)}}</pre>
+      </div>
+      <div class="Date">created on {{question.created_time.strftime("%d %b %Y %H:%M:%S EST")}}</div>
+      <div class="Date">editted on {{question.modifytimeEST().strftime("%d %b %Y %H:%M:%S EST")}}</div>
+      
+      <div class="postFooter"> Tags:
+      {% for tag in question.tagList() %}
+           
+            <a href="/tag/{{tag.key()}}"><span class="tag">{{tag.tag}}</span></a>
+      {% endfor %}
+      </div>
+      <hr>
+    </div>
+    {% endfor %}
+    
+    <div>
+       {% if cursor %}
+          <a href="?cursor={{cursor}}">Next Page</a>
+       {% endif %}
+    </div>
+   </body>
+</html>
+{% endautoescape %}
