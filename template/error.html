@@ -1,7 +1,18 @@
-{% extends "template/index.html" %}
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <head>
+    <title>Error</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+  </head>
+   <body>
+    <a href="/">
+    <p>Home</p>
+    </a>
+    <h2>Error!</h2>
+       you are not author of this question or answer, so you cannot edit.
+    </a>
+    </body>
+</html>
+{% endautoescape %}
 
-{% block contents %}
-  <h2>Error!</h2>
-    you are not author of this question or answer, so you cannot edit.
-  </a>
-{% endblock %}

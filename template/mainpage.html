@@ -2,10 +2,8 @@
 {% autoescape true %}
 <html>
   <head>
-    <link rel="alternate" type="application/rss+xml" href="/rss/{{blogkey}}" title="RSS">
     <title>Main Page</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/> 
-
   </head>
    <body>
     <div class="wrapper">
@@ -14,9 +12,6 @@
       </h1>
     </div>
     <div class="direction">
-    <a href="/rss/{{blogkey}}">
-      RSS
-    </a>
     <p>
      <a href = "{{ url|safe }}">{{ url_linktext }}</a>
     </p>
@@ -31,27 +26,22 @@
     <p>Upload Image</p>
     </a>
     <hr>
-    {% for question in questions %}  
-   
-      {{question.ownername}} wrote:</div>
+    {% for question in questions %} 
+      {{question.ownername}} wrote:     
       <h2><a href="/questionview/{{question.key().id()}}">{{question.name}}</a></h2>
       <pre>{{question.content|truncate(500)}}</pre>
       <div>created on {{question.created_time.strftime("%d %b %Y %H:%M:%S EST")}}</div>
-      <div>editted on {{question.modifytimeEST().strftime("%d %b %Y %H:%M:%S EST")}}</div>
-      
+      <div>editted on {{question.modifytimeEST().strftime("%d %b %Y %H:%M:%S EST")}}</div>      
       Tags:
-      {% for tag in question.tagList() %}
-           
+      {% for tag in question.tagList() %}           
             <a href="/tag/{{tag.key()}}"><span class="tag">{{tag.tag}}</span></a>
       {% endfor %}      
       <hr>
-    {% endfor %}
-        
+    {% endfor %}        
        {% if cursor %}
           <a href="?cursor={{cursor}}">Next Page</a>
        {% endif %}
     </div>
-    
    </body>
 </html>
 {% endautoescape %}

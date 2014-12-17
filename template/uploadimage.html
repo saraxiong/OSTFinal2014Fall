@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 {% autoescape true %}
 <html>
+  <head>
+    <title>Main Page</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+  </head>
   <body>
-    <h2>Upload Image</h2>
+    <h1>Upload Image</h1>
     <a href="/">
     <p>Back to Main_Page</p>
     </a>
     <form action="/uploadimage" enctype="multipart/form-data" method="post">
       <h3>Image</h3>
       {% for image in images %}
-      <h3><img src="/image/{{image.key()}}"/>
+      <h4><img src="/image/{{image.key()}}"/>
         <br>
-        <input type="text" value="[img:{{image.key()}}]" style="width:300px;font-size:x-small"/>
-      </h3>
+       link for image(copy this into question or answer content) : <input type="text" value="[img:{{image.key()}}]" style="width:300px;font-size:x-small"/>
+      <hr>
+      </h4>
       {% endfor %}
       <h3>
         <input type="file" name="file">

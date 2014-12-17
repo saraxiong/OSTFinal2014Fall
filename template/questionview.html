@@ -1,70 +1,68 @@
 <!DOCTYPE html>
 {% autoescape true %}
 <html>
-  <head>
-    
+  <head> 
     <title>View</title>
-    <link rel="stylesheet" type="text/css" href="/css/style.css"/> 
-
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/> 
   </head>
   <body>
     <div class="wrapper">
-    <div class="intro">
-      <h3 id="page-title">
+      <h1>
 	<p>Question View Page</p>
-      </h3>
+      </h1>
     </div>
-    <div class="menu">
-    
+    <div class="direction">
+    <p>
+     <a href = "{{ url|safe }}">{{ url_linktext }}</a>
+    </p>
+    <a href="/rss/{{questionkey}}">
+      RSS
+    </a>    
     <p>
      <a href = "/addanswer/{{questionkey}}">Add Answer</a>
     </p>
     <a href="/">
     <p>Back to Main_Page</p>
     </a>
-    </div>
     <hr>
-    <h3>Title: {{parentquestion.name}}</h3>
-    <div>Question content: {{parentquestion.contentFormat()|safe}}</div>
+    <h2>Question Title: {{parentquestion.name}}</h3>
+    <div><h3>Question content: {{parentquestion.contentFormat()|safe}}</h3></div>
     <a href = "/editquestion/{{questionkey}}">
-       <p>Edit this question/Add images</p>
+       <p><h4>Edit this question/Add images</h4></p>
     </a>
     <a href="/vote/question/up/{{questionkey}}/additional">
         <input type='button' value="Up">
-    </a>{{parentquestion.up}}
+    </a> : {{parentquestion.up}} 
     
     <a href="/vote/question/down/{{questionkey}}/additional">
         <input type='button' value="Down">
-    </a>{{parentquestion.down}}    
-    <div>diff: {{parentquestion.diff}}</div>
+    </a> : {{parentquestion.down}}    
+    <div>diff : {{parentquestion.diff}}</div>
     <div>created on: {{parentquestion.created_time.strftime("%d %b %Y %H:%M:%S EST")}}</div>
         <div>editted on: {{parentquestion.modifytimeEST().strftime("%d %b %Y %H:%M:%S EST")}}</div>
       
     <hr>
+    <hr>
     {% for answer in answers %}
-    <div class="block">
-        <div>{{answer.ownername}} wrote:</div>        
-	<div class="body"> 
-	  {{answer.contentFormat()|safe}}
+        <div><h2>{{answer.ownername}} wrote:</h2></div>        
+	<div><h3> 
+	  {{answer.contentFormat()|safe}}</h3>
 	</div>
         <a href = "/editanswer/{{questionkey}}/{{answer.key().id()}}">
-            <p>Edit this answer</p>
+            <p><h4>Edit this answer</h4></p>
         </a>        
         <a href="/vote/answer/up/{{questionkey}}/{{answer.key().id()}}">
            <input type='button' value="Up">
-        </a>{{answer.up}}
+        </a> : {{answer.up}}
 
         <a href="/vote/answer/down/{{questionkey}}/{{answer.key().id()}}">
            <input type='button' value="Down">
-        </a>{{answer.down}}
-        <div>diff: {{answer.diff}}</div>
+        </a> : {{answer.down}}
+        <div> diff: {{answer.diff}}</div>
         <div>created on: {{answer.created_time.strftime("%d %b %Y %H:%M:%S EST")}}</div>
         <div>editted on: {{answer.modifytimeEST().strftime("%d %b %Y %H:%M:%S EST")}}</div>
         <hr>        
-   </div>
    {% endfor %}
-   
-   
   </body>
 </html>
 {% endautoescape %}

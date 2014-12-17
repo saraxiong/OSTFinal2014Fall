@@ -6,6 +6,7 @@ import time
 from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.api import memcache
+from google.appengine.api import mail
 
 import jinja2
 import webapp2
@@ -23,6 +24,7 @@ class Question(db.Model):
     content = db.TextProperty(default="")
     ownerid = db.StringProperty()
     ownername = db.StringProperty()
+    quser = db.StringProperty()
     created_time = db.DateTimeProperty(auto_now_add=True)
     modify_time = db.DateTimeProperty(auto_now=True)
     voteuplist = db.ListProperty(str,indexed=False,default=[])
@@ -31,6 +33,7 @@ class Question(db.Model):
     down = db.IntegerProperty(default=0)
     diff = db.IntegerProperty(default=0)
     tags = db.ListProperty(db.Key)
+
     def tagList(self):
         return [Tag.get(key) for key in self.tags]
     def tagStr(self):
@@ -39,13 +42,16 @@ class Question(db.Model):
         return self.modify_time + datetime.timedelta(hours=-5)    
     def contentFormat(self):
         return content_filter(self.content)
+ 
 class Tag(db.Model):
     tag = db.StringProperty()
+ 
 
 class Image(db.Model):
     image = db.BlobProperty()
     question = db.ReferenceProperty(Question, collection_name = 'images')
     contentType = db.StringProperty()
+    
 
 def content_filter(str):
     str = re.sub(r'(https?)(://[\w:;/.?%#&=+-]+)(\.(jpg|png|gif))', imageReplacer, str)
@@ -111,10 +117,10 @@ class MainPage(webapp2.RequestHandler):
             cursor = questions.cursor()
 
         if user:
-            url = users.create_logout_url('/')
-            url_linktext = user.nickname() + ' -> Logout'
+            url = users.create_logout_url(self.request.uri)
+            url_linktext = 'Welcome ' + user.nickname() + ' -> Logout'
         else:
-            url = users.create_login_url('/')
+            url = users.create_login_url(self.request.uri)
             url_linktext = 'Login'
 
         template_values = {
@@ -143,13 +149,10 @@ class UploadImage(webapp2.RequestHandler):
 
 class TagHandler(webapp2.RequestHandler):
     def get(self, tagkey):
-        tag = Tag.get(tagkey)   # get tag entity
-        
-        questions = Question.all()
-       
+        tag = Tag.get(tagkey)          
+        questions = Question.all()       
         questions.filter('tags', tag.key())
-        questions.order("-created_time") 
-        
+        questions.order("-created_time")         
         tag_list = []
         tag_list.append(tag)
  
@@ -158,13 +161,10 @@ class TagHandler(webapp2.RequestHandler):
             questions.with_cursor(start_cursor=cursor)
         items = questions.fetch(10)
         if len(items) < 10:      
-            cursor = None     # indicate this is last page
+            cursor = None    
         else:
             cursor = questions.cursor()
-
-        # pass parent blogkey to singleblog page
         template_values = {'questions': items, 'cursor': cursor, 'taglist' : tag_list}    
-
         template = JINJA_ENVIRONMENT.get_template('/template/mainpage.html')
         self.response.write(template.render(template_values))
 
@@ -179,14 +179,13 @@ class AddQuestion(webapp2.RequestHandler):
             self.redirect(users.create_login_url('/')) 
              
     def post(self):
-        user = users.get_current_user()
-        
+        user = users.get_current_user()        
         question = Question()
         question.name = self.request.get('name')
         question.content = self.request.get('content')
         question.ownerid = user.user_id()
         question.ownername = user.nickname()
-
+        question.quser = user.email()
         question.created_time = question.created_time + datetime.timedelta(hours=-5)
         question.modify_time = question.modify_time + datetime.timedelta(hours=-5)
         tags = self.request.get('tags')
@@ -199,7 +198,6 @@ class AddQuestion(webapp2.RequestHandler):
                       tag = Tag(tag=tagstr)
                       tag.put()
                   question.tags.append(tag.key())
-
               question.put()
               time.sleep(0.1)
         self.redirect('/')
@@ -208,7 +206,6 @@ class EditQuestion(webapp2.RequestHandler):
     def get(self, questionkey):
         user = users.get_current_user()
         question = Question.get_by_id(int(questionkey))
-
         if user:
            if user.user_id() == question.ownerid: 
               template = JINJA_ENVIRONMENT.get_template('/template/editquestion.html')
@@ -217,11 +214,9 @@ class EditQuestion(webapp2.RequestHandler):
                                                    'oldcontent':question.content,
                                                    'oldtags' :question.tagStr(),
                                                    'images' : question.images}))
-           else:
-             
+           else:             
               template = JINJA_ENVIRONMENT.get_template('/template/error.html')
               self.response.write(template.render())
-             # self.redirect('/questionview/%s' %questionkey)
         else:
            self.redirect(users.create_login_url('/editquestion/%s' %questionkey))
 
@@ -232,9 +227,9 @@ class EditQuestion(webapp2.RequestHandler):
         tags = self.request.get('tags')
         taglist = re.split('[,; ]+', tags)
         question.tags = []
-        for tagstr in taglist:      # store Tag entity into datastore and they will have key
+        for tagstr in taglist:     
             tag = Tag.all().filter('tag =', tagstr).get()
-            if tag == None:         # if this is not None, then the tag is used before
+            if tag == None:      
                 tag = Tag(tag=tagstr)
                 tag.put()
             question.tags.append(tag.key())
@@ -269,14 +264,12 @@ class View(webapp2.RequestHandler):
         answers = Answer.all()
         answers.ancestor(parentquestion)
         answers.order("-diff")
-
         user = users.get_current_user()
-
         if user:
-            url = users.create_logout_url('/')
-            url_linktext = user.nickname() + ' -> Logout'
+            url = users.create_logout_url(self.request.uri)
+            url_linktext = 'Welcome ' + user.nickname() + ' -> Logout'
         else:
-            url = users.create_login_url('/')
+            url = users.create_login_url(self.request.uri)
             url_linktext = 'Login'
 
         template_values = {
@@ -308,11 +301,19 @@ class AddAnswer(webapp2.RequestHandler):
         user = users.get_current_user()
         ownerid = user.user_id()
         ownername = user.nickname()
-                
+        senderemail=user.email()       
         answer = Answer(parent = parentquestion, content=content, ownerid=ownerid,ownername=ownername)
         answer.created_time = answer.created_time + datetime.timedelta(hours=-5)
         answer.put()
         time.sleep(0.1)
+        
+        message = mail.EmailMessage()
+        message.sender = user.email()
+        message.subject = "You question has been answered!!"
+        message.to = parentquestion.quser
+        message.body = """
+                      Your question has been answered. Please check it!!"""
+        message.send() 
         self.redirect('/questionview/%s' %questionkey) 
 
 class EditAnswer(webapp2.RequestHandler):
@@ -419,6 +420,17 @@ class Vote(webapp2.RequestHandler):
               else:
                  self.redirect(users.create_login_url('/questionview/%s' %questionkey)) 
 
+#class RSS(webapp2.RequestHandler):
+  #  def get(self, questionkey):
+       # parentquestion = Question.get_by_id(int(questionkey))
+       # answers = Answer.all()
+      #  answers.ancestor(parentquestion)
+     #   answers.order("-created_time")
+    #    template = JINJA_ENVIRONMENT.get_template('/template/rss.xml')
+   #     self.response.headers['Content-Type'] = 'application/rss+xml'
+  #      self.response.write(template.render({'parentquestion': parentquestion,
+ #                                            'answers' : answers}))
+
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/addquestion', AddQuestion),
@@ -430,4 +442,5 @@ application = webapp2.WSGIApplication([
     ('/tag/(.*)',TagHandler),
     ('/image/(.*)',ImageHandler), 
     ('/uploadimage',UploadImage),
+#    ('/rss/(.*)', RSS),
 ], debug=True)

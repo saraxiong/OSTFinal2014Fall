@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 {% autoescape true %}
 <html>
+  <head>
+    <title>Edit Question</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+  </head>
   <body>
-    <h2>Edit Question</h2>
+    <h1>Edit Question</h1>
     <a href="/uploadimage">
     <p>To Upload Image Page to Find Image Link</p>
     </a>
     <form action="/editquestion/{{questionkey}}" enctype="multipart/form-data" method="post">
-      <p>Name</p>
+      <p><h3>Name</h3></p>
       <p><input type="text" name="name" value="{{oldname}}"></p>
-      <h3>Tags</h3>
+      <h3>Tags(seperated by , )</h3>
       <p><input type="text" name="tags" value="{{oldtags}}"></p>      
       <h3>Content</h3>
       <p><textarea name="content" rows="20" cols="100">{{oldcontent}}</textarea></p>
@@ -25,7 +29,6 @@
       </h3>
       <input type="submit" value="Update" style="font-size:20px">
     </form>
-
   </body>
 </html>
 {% endautoescape %}

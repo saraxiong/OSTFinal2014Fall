@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<rss version="2.0">
+<channel>
+  <title>OST Final Project</title>
+  <link>http://ostfinalfall.appspot.com</link>
+  <description>These are feed of OST Final Project</description>
+  <item>
+      <title>{{parentquestion.name}}</title>
+      <link>http://ostfinalfall.appspot.com/questionview/{{parentquestion.key()}}</link>
+      <description>{{parentquestion.content}}</description>
+  </item>
+  {% for answer in answers %}
+  <item>
+      <title>answer</title>
+      <link>http://ostfinalfall.appspot.com/questionview/{{parentquestion.key()}}</link>
+      <description>{{answer.content}}</description>
+  </item>
+  {% endfor %}
+</channel>
+</rss> 
+

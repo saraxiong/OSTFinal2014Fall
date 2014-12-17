@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 {% autoescape true %}
 <html>
+  <head>
+    <title>Create Question</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+  </head>
   <body>
-
-    <h2>Create Question</h2>
+    <h1>Create Question</h1>
     <a href="/uploadimage">
     <p>To Upload Image Page to Find Image Link</p>
     </a> 
     <form action="/addquestion" method="post">
       <h3>Question Name:</h3>
       <div><input type="text" name="name"></div>
-      <h3>Tags</h3>
+      <h3>Tags(seperated by , )</h3>
       <div><input type="text" name="tags"></div>
       <h3>content:</h3>
       <div><textarea name="content" rows="5" cols="60"></textarea></div>
       <hr>
       <div><input type="submit" value="create"></div>
     </form>
-
   </body>
 </html>
 {% endautoescape %}
