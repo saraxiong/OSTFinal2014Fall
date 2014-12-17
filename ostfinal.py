@@ -420,16 +420,16 @@ class Vote(webapp2.RequestHandler):
               else:
                  self.redirect(users.create_login_url('/questionview/%s' %questionkey)) 
 
-#class RSS(webapp2.RequestHandler):
-  #  def get(self, questionkey):
-       # parentquestion = Question.get_by_id(int(questionkey))
-       # answers = Answer.all()
-      #  answers.ancestor(parentquestion)
-     #   answers.order("-created_time")
-    #    template = JINJA_ENVIRONMENT.get_template('/template/rss.xml')
-   #     self.response.headers['Content-Type'] = 'application/rss+xml'
-  #      self.response.write(template.render({'parentquestion': parentquestion,
- #                                            'answers' : answers}))
+class RSS(webapp2.RequestHandler):
+    def get(self, questionkey):
+        parentquestion = Question.get_by_id(int(questionkey))
+        answers = Answer.all()
+        answers.ancestor(parentquestion)
+        answers.order("-created_time")
+        template = JINJA_ENVIRONMENT.get_template('/template/rss.xml')
+        self.response.headers['Content-Type'] = 'application/rss+xml'
+        self.response.write(template.render({'parentquestion': parentquestion,
+                                             'answers' : answers}))
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
@@ -442,5 +442,5 @@ application = webapp2.WSGIApplication([
     ('/tag/(.*)',TagHandler),
     ('/image/(.*)',ImageHandler), 
     ('/uploadimage',UploadImage),
-#    ('/rss/(.*)', RSS),
+    ('/rss/(.*)', RSS),
 ], debug=True)
